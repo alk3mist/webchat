@@ -62,7 +62,7 @@ export default class Chat extends React.Component {
                 {fromUser.id !== user.id &&
                 <h4>{fromUser.name}</h4>
                 }
-                <p><pre>{text}</pre></p>
+                <pre>{text}</pre>
                 <p className='float-right'>
                     <small>{formatDate(timestamp)}</small>
                 </p>
@@ -120,6 +120,7 @@ export default class Chat extends React.Component {
                         onChange={this.handleInputChange}
                         value={this.state.message}
                         onKeyUp={this.handleInputKeyUp}
+                        autoFocus={true}
                     />
                     <button type='submit' className='button'>
                         <code>&#9658;</code>

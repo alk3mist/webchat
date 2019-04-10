@@ -1,7 +1,10 @@
 import React from 'react';
-import logo from "./logo.svg";
-import Chat from "../Chat";
+import Chat from '../Chat';
+import Login from '../Login';
+
+import logo from './logo.svg';
 import './App.css';
+import * as api from "../../api";
 
 const user = {
     id: 1,
@@ -94,8 +97,14 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             loading: true,
-            messages: messages
+            messages: messages,
+            user: null
         }
+    }
+
+    async componentDidMount() {
+        const resp = await api.getMessages();
+        console.log(resp);
     }
 
     handleSendMessage = (text) => {
@@ -114,8 +123,12 @@ export default class App extends React.Component {
         )
     };
 
+    handleLogin = (username) => {
+        this.setState({user: {id: 1, name: username}});
+    };
+
     render() {
-        const {messages} = this.state;
+        const {user, messages} = this.state;
         return (
             <div className='app'>
                 <img src={logo}
@@ -123,7 +136,10 @@ export default class App extends React.Component {
                      alt="logo"
                 />
                 <div className="container">
-                    <Chat user={user} messages={messages} onSendMessage={this.handleSendMessage}/>
+                    {user
+                        ? <Chat user={user} messages={messages} onSendMessage={this.handleSendMessage}/>
+                        : <Login onSubmit={this.handleLogin}/>
+                    }
                 </div>
             </div>
         );
