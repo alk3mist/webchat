@@ -1,0 +1,142 @@
+.chat {
+    background-color: rgba(24, 27, 34, 0.46);
+    border: solid #235fbb 1px;
+    padding: 2rem;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-flow: column;
+
+    min-width: 80vmin;
+    max-width: 80vmin;
+    min-height: 60vmin;
+    max-height: 90vh;
+}
+
+.chat hr {
+    color: #7e99a0;
+    width: 100%;
+}
+
+.chat .header {
+    color: #6ca7bb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chat h3 {
+    margin-bottom: 0;
+}
+
+form.message-form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-self: end;
+    margin-bottom: 1rem;
+}
+
+.chat textarea {
+    background-color: rgba(74, 92, 99, 0.36);
+    color: #6ca7bb;
+    border: solid #235fbb 1px;
+    padding: 0.2rem 0.5rem;
+    flex-grow: 2;
+}
+
+.chat textarea:focus {
+    box-shadow: 0 0 1px 1px #235fbb;
+}
+
+.chat .button {
+    background-color: rgba(74, 92, 99, 0.36);
+    color: #6ca7bb;
+    border: solid #235fbb 1px;
+    padding: 1rem;
+}
+
+.chat button:not(disabled) {
+    cursor: pointer;
+}
+
+.chat ul {
+    list-style: none;
+    scrollbar-color: #4c7685 #3A4252;
+}
+.chat ul::-webkit-scrollbar {
+    width: 0.5rem;
+    background-color: #3A4252;
+}
+
+.chat ul::-webkit-scrollbar-thumb {
+    background-color: #4c7685;
+}
+
+.list-message {
+    display: flex;
+    flex-flow: column;
+    padding: 0 0.5rem 0 0;
+    flex-grow: 1;
+    margin: 0 0 0.5rem 0;
+    overflow-y: auto;
+    align-items: flex-end;
+}
+
+
+li.message {
+    margin-bottom: 5px;
+    flex-direction: column;
+    background-color: rgba(74, 92, 99, 0.36);
+    padding: 0.5rem 1rem;
+    color: #6ca7bb;
+    min-width: 40%;
+    max-width: 60%;
+    display: flex;
+    flex-flow: column;
+}
+
+.message pre {
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.message h4 {
+    margin: 0;
+}
+
+.message p {
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+    color: lightgrey;
+}
+
+.message small {
+    font-size: 0.7rem;
+    color: darkgrey;
+    margin-top: 1rem;
+}
+
+.float-left {
+    align-self: flex-start;
+}
+
+.float-right {
+    align-self: flex-end;
+}
+
+@media all and (max-width: 1024px) {
+    .chat {
+        width: 100vw;
+        max-width: none;
+        max-height: 100vh;
+        padding: 1rem 1rem 2rem 1rem;
+    }
+
+    .chat input,
+    .chat .button {
+        padding: 0.5rem 1rem
+    }
+}
