@@ -16,8 +16,8 @@ Including another URLconf
 
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import re_path
-
+from django.contrib import admin
+from django.urls import re_path, path, include
 
 from chat.views import MainView
 
@@ -27,5 +27,7 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [
+    path('admin/', admin.site.urls),
+    path('api/', include('chat.urls')),
     re_path(r'', MainView.as_view())
 ]
