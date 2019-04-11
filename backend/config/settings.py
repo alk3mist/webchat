@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
+    'channels',
 ]
 INSTALLED_APPS += PROJECT_APPS
 
@@ -105,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'chat.User'
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -126,7 +126,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'chat', "static"),
 ]
-
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
@@ -158,3 +157,5 @@ CORS_ALLOW_HEADERS = (
     'access-control-allow-origin',
     'access-control-allow-headers'
 )
+
+ASGI_APPLICATION = "config.routing.application"

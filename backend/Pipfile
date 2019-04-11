@@ -8,6 +8,7 @@ django = "*"
 djangorestframework = "*"
 django-filter = "*"
 django-cors-headers = "*"
+channels = "==2.0"
 
 [dev-packages]
 
