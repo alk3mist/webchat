@@ -29,7 +29,10 @@ export default class Chat extends React.Component {
     static propTypes = {
         messages: PropTypes.arrayOf(messageShape),
         username: PropTypes.string.isRequired,
-        onSendMessage: PropTypes.func.isRequired
+        onSendMessage: PropTypes.func.isRequired,
+        canLoadMore: PropTypes.bool.isRequired,
+        onLoadMore: PropTypes.func.isRequired,
+        error: PropTypes.any
     };
     static defaultProps = {
         messages: [],
@@ -102,7 +105,7 @@ export default class Chat extends React.Component {
     };
 
     render() {
-        const {username, messages} = this.props;
+        const {username, messages, canLoadMore} = this.props;
         return (
             <div className="chat">
                 <div className="header">
@@ -110,7 +113,12 @@ export default class Chat extends React.Component {
                     <div className='float-right'>{username}</div>
                 </div>
                 <hr/>
+
                 <ul className='list-message'>
+                    {canLoadMore &&
+                    <li>
+                        <button className='button' onClick={this.props.onLoadMore}>load more</button>
+                    </li>}
                     {this.renderMessages(messages)}
                     <li ref={this.setChatBottomRef}/>
                 </ul>

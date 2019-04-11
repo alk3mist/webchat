@@ -11,6 +11,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            prev: null,
             loading: true,
             messages: [],
             username: null
@@ -30,6 +31,13 @@ export default class App extends React.Component {
         };
         await this.ws.sendPacked(message);
     };
+    handleLoadMore = async () => {
+        const resp = await api.loadMoreMessages(this.state.prev);
+        await this.setState({
+            messages: [...resp.results.reverse(), ...this.state.messages],
+            prev: resp.next
+        })
+    };
 
     handleLogin = async (username) => {
         const resp = await api.getMessages({
@@ -38,11 +46,15 @@ export default class App extends React.Component {
                 created_before: new Date().toISOString()
             }
         });
-        await this.setState({messages: resp.results});
+        await this.setState({
+            messages: resp.results.reverse(),
+            prev: resp.next
+        });
         try {
             this.ws = api.connectToChat();
-            await this.ws.open();
             this.ws.onUnpackedMessage.addListener(this.onMessage.bind(this));
+            this.ws.onClose.addListener(this.ws.open);
+            await this.ws.open();
         } catch (e) {
             console.error(e);
         }
@@ -51,7 +63,7 @@ export default class App extends React.Component {
     };
 
     render() {
-        const {username, messages} = this.state;
+        const {username, messages, prev} = this.state;
         return (
             <div className='app'>
                 <img src={logo}
@@ -60,7 +72,12 @@ export default class App extends React.Component {
                 />
                 <div className="container">
                     {username
-                        ? <Chat username={username} messages={messages} onSendMessage={this.handleSendMessage}/>
+                        ? <Chat username={username}
+                                messages={messages}
+                                onSendMessage={this.handleSendMessage}
+                                canLoadMore={!!prev}
+                                onLoadMore={this.handleLoadMore}
+                        />
                         : <Login onSubmit={this.handleLogin}/>
                     }
                 </div>
