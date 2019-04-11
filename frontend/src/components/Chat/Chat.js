@@ -16,19 +16,19 @@ function formatDate(date) {
 
 const userShape = PropTypes.shape({
     id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired
+    username: PropTypes.string.isRequired
 });
 const messageShape = PropTypes.shape({
     id: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
-    timestamp: PropTypes.instanceOf(Date).isRequired,
-    fromUser: userShape.isRequired
+    created_at: PropTypes.instanceOf(Date).isRequired,
+    author: userShape.isRequired
 });
 
 export default class Chat extends React.Component {
     static propTypes = {
         messages: PropTypes.arrayOf(messageShape),
-        user: userShape.isRequired,
+        username: PropTypes.string.isRequired,
         onSendMessage: PropTypes.func.isRequired
     };
     static defaultProps = {
@@ -54,17 +54,17 @@ export default class Chat extends React.Component {
     }
 
     renderMessages = (messages) => {
-        const {user} = this.props;
-        return messages.map(({id, text, fromUser, timestamp}) =>
+        const {username} = this.props;
+        return messages.map(({id, text, author, created_at}) =>
             <li key={id}
-                className={`message ${fromUser.id === user.id ? 'float-right' : 'float-left'}`}
+                className={`message ${author.username === username ? 'float-right' : 'float-left'}`}
             >
-                {fromUser.id !== user.id &&
-                <h4>{fromUser.name}</h4>
+                {author.username !== username &&
+                <h4>{author.username}</h4>
                 }
                 <pre>{text}</pre>
                 <p className='float-right'>
-                    <small>{formatDate(timestamp)}</small>
+                    <small>{formatDate(created_at)}</small>
                 </p>
             </li>
         )
@@ -102,12 +102,12 @@ export default class Chat extends React.Component {
     };
 
     render() {
-        const {user, messages} = this.props;
+        const {username, messages} = this.props;
         return (
             <div className="chat">
                 <div className="header">
                     <h3>WebChat</h3>
-                    <div className='float-right'>{user.name}</div>
+                    <div className='float-right'>{username}</div>
                 </div>
                 <hr/>
                 <ul className='list-message'>

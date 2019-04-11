@@ -1,4 +1,5 @@
 import axios from 'axios/index';
+import WebSocketAsPromised from 'websocket-as-promised';
 
 export const homeURL = (process.env.REACT_APP_DEBUG === 'True')
     ? `http://${window.location.host.split(':', 1)[0]}:8000`
@@ -9,8 +10,8 @@ const instance = axios.create({
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-        // 'Access-Control-Allow-Credentials': true
+        // 'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
+        // 'Access-Control-Allow-Credentials': true,
         // 'Access-Control-Allow-Headers': '*',
         // 'Access-Control-Allow-Methods': '*'
     },
@@ -44,23 +45,29 @@ const post = (url, params) => call(instance.post)(url, params);
 const patch = (url, params) => call(instance.patch)(url, params);
 const del = (url, params = {}) => call(instance.delete)(url, {params});
 
+
 // messages
-export const getMessages = (params) => getList('/messages/', {params});
+export const getMessages = async (params) => {
+    const data = await getList('/messages/', params);
+    data.results = data.results.map(normalizeMessage);
+    return data;
+};
 
+function normalizeMessage({created_at, ...others}) {
+    return {
+        created_at: new Date(created_at),
+        ...others
+    }
+}
 
-export function connectToChat(onOpen = console.log, onMessage, onError, onClose) {
-    const path = `${homeURL}/chat_ws`;
-    const socketRef = new WebSocket(path);
-    socketRef.onopen = onOpen;
-    socketRef.onmessage = m => {
-        const parsedData = JSON.parse(m.data);
-        onMessage(parsedData);
-    };
-    socketRef.onerror = e => {
-        onError(e.message);
-    };
-    socketRef.onclose = () => {
-        onClose();
-    };
-    return socketRef;
+export function connectToChat() {
+    const hostname = homeURL.replace('http://', 'ws://').replace('https://', 'wss://');
+    const wsUrl = `${hostname}/ws/chat/`;
+    return  new WebSocketAsPromised(wsUrl, {
+        packMessage: data => JSON.stringify(data),
+        unpackMessage: function (message) {
+            const {payload} = JSON.parse(message);
+            return normalizeMessage(payload);
+        },
+    });
 }
