@@ -39,7 +39,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     def save_message(self, content):
         author, created = User.objects.get_or_create(username=content['username'])
         message = Message.objects.create(
-            text=content['message'],
+            text=content['text'],
             author=author
         )
         return message
