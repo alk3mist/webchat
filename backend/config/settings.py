@@ -24,7 +24,8 @@ SECRET_KEY = 'rfa%ovm%iglbi(2xeheyj3lffkl7n%4rg5=-mkjtq8gll&oed%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 PROJECT_APPS = [
@@ -169,3 +170,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
