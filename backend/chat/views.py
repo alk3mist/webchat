@@ -11,6 +11,11 @@ class MainView(TemplateView):
     template_name = 'chat/index.html'
 
 
+class MessagePagination(PageNumberPagination):
+    page_size = 50
+    max_page_size = 100
+
+
 class MessageViewSet(ModelViewSet):
     serializer_class = MessageSerializer
     queryset = (Message.objects
