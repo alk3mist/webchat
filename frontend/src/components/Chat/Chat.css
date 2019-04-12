@@ -7,10 +7,8 @@
     display: flex;
     flex-flow: column;
 
-    min-width: 80vmin;
-    max-width: 80vmin;
-    min-height: 60vmin;
-    max-height: 90vh;
+    width: 100vmin;
+    height: 90vmin;
 }
 
 .chat hr {
@@ -37,33 +35,13 @@ form.message-form {
     margin-bottom: 1rem;
 }
 
-.chat textarea {
-    background-color: rgba(74, 92, 99, 0.36);
-    color: #6ca7bb;
-    border: solid #235fbb 1px;
-    padding: 0.2rem 0.5rem;
-    flex-grow: 2;
-}
 
-.chat textarea:focus {
-    box-shadow: 0 0 1px 1px #235fbb;
-}
-
-.chat .button {
-    background-color: rgba(74, 92, 99, 0.36);
-    color: #6ca7bb;
-    border: solid #235fbb 1px;
-    padding: 1rem;
-}
-
-.chat button:not(disabled) {
-    cursor: pointer;
-}
 
 .chat ul {
     list-style: none;
     scrollbar-color: #4c7685 #3A4252;
 }
+
 .chat ul::-webkit-scrollbar {
     width: 0.5rem;
     background-color: #3A4252;
@@ -97,10 +75,10 @@ li.message {
 }
 
 .message pre {
- white-space: pre-wrap;       /* css-3 */
- white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
- white-space: -o-pre-wrap;    /* Opera 7 */
- word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
 .message h4 {
@@ -119,19 +97,20 @@ li.message {
     margin-top: 1rem;
 }
 
-.float-left {
-    align-self: flex-start;
-}
-
-.float-right {
-    align-self: flex-end;
+.error-message{
+    position: relative;
+    top: 1rem;
+    left: 0;
+    background-color: darkred;
+    color: wheat;
 }
 
 @media all and (max-width: 1024px) {
     .chat {
         width: 100vw;
         max-width: none;
-        max-height: 100vh;
+        height: 100vh;
+        max-height: none;
         padding: 1rem 1rem 2rem 1rem;
     }
 

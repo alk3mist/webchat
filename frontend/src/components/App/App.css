@@ -41,3 +41,61 @@
         transform: rotate(360deg);
     }
 }
+
+.center {
+    align-self: center;
+}
+
+.w-50 {
+    width: 50%;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.mb-1 {
+    margin-bottom: 1rem;
+}
+
+textarea,
+input {
+    background-color: rgba(74, 92, 99, 0.36);
+    color: #6ca7bb;
+    border: solid #235fbb 1px;
+    flex-grow: 2;
+    height: auto;
+}
+
+textarea {
+    padding: 0.2rem 0.5rem;
+}
+
+input{
+    padding: 1rem
+}
+
+
+textarea:focus,
+input:focus {
+    box-shadow: 0 0 1px 1px #235fbb;
+}
+
+.button {
+    background-color: rgba(74, 92, 99, 0.36);
+    color: #6ca7bb;
+    border: solid #235fbb 1px;
+    padding: 1rem;
+    cursor: pointer;
+}
+.button-sm{
+    padding: 0.5rem 1rem;
+}
+
+.float-left {
+    align-self: flex-start;
+}
+
+.float-right {
+    align-self: flex-end;
+}

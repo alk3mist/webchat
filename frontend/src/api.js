@@ -1,20 +1,13 @@
 import axios from 'axios/index';
-import WebSocketAsPromised from 'websocket-as-promised';
+import ReconnectingWebSocket from 'reconnectingwebsocket';
 
-
-export const homeURL = (process.env.REACT_APP_DEBUG === 'True')
-    ? `http://${window.location.host.split(':', 1)[0]}:8000`
-    : '';
+const DEBUG = process.env.REACT_APP_DEBUG === 'True';
 
 const instance = axios.create({
-    baseURL: `${homeURL}/api/`,
+    baseURL: buildURL({pathname: `/api/`}),
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        // 'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
-        // 'Access-Control-Allow-Credentials': true,
-        // 'Access-Control-Allow-Headers': '*',
-        // 'Access-Control-Allow-Methods': '*'
     },
     credentials: 'same-origin'
 });
@@ -42,10 +35,7 @@ function call(wrapped) {
 // base API methods
 export const get = (url, params) => call(instance.get)(url, {params});
 const getList = (url, {filters = {}, search = null, ...others}) => get(url, {...filters, ...others, search});
-const post = (url, params) => call(instance.post)(url, params);
-const patch = (url, params) => call(instance.patch)(url, params);
-const del = (url, params = {}) => call(instance.delete)(url, {params});
-export const getByUrl = (url) => call(instance.get)(url);
+export const getByURL = (url) => call(instance.get)(url);
 
 
 // messages
@@ -54,8 +44,8 @@ export const getMessages = async (params) => {
     data.results = data.results.map(normalizeMessage);
     return data;
 };
-export const loadMoreMessages = async url => {
-    const data = await getByUrl(url);
+export const getMessagesByURL = async url => {
+    const data = await getByURL(url);
     data.results = data.results.map(normalizeMessage);
     return data;
 };
@@ -67,17 +57,31 @@ function normalizeMessage({created_at, ...others}) {
     }
 }
 
-export function connectToChat() {
-    let hostname = window.location.hostname;
-    const port = (process.env.REACT_APP_DEBUG === 'True') ? '8000' : window.location.port;
-
-    const protocol = (window.location.protocol === 'https:') && 'wss://' || 'ws://';
-    const wsUrl = `${protocol}${hostname}${port ? (':' + port) : ''}/ws/chat/`;
-    return new WebSocketAsPromised(wsUrl, {
-        packMessage: data => JSON.stringify(data),
-        unpackMessage: function (message) {
-            const {payload} = JSON.parse(message);
-            return normalizeMessage(payload);
-        },
+export function connectToChat({onOpen = console.log, onClose = console.log, onMessage = console.log, onError = console.log}) {
+    const chatURL = buildURL({
+        protocol: (window.location.protocol === 'https:') ? 'wss://' : 'ws://',
+        pathname: '/ws/chat/'
     });
+
+    const ws = new ReconnectingWebSocket(chatURL, null, {debug: DEBUG});
+    ws.onopen = onOpen;
+    ws.onclose = onClose;
+    ws.onerror = onError;
+    ws.onmessage = function (message) {
+        const data = JSON.parse(message.data);
+        onMessage(normalizeMessage(data.payload))
+    };
+    return ws;
+}
+
+
+function buildURL(
+    {
+        protocol = window.location.protocol,
+        hostname = window.location.hostname,
+        port = DEBUG ? '8000' : window.location.port,
+        pathname = '/'
+    }) {
+    const portPrefix = port.length ? ':' : '';
+    return `${protocol}//${hostname}${portPrefix}${port}${pathname}`
 }

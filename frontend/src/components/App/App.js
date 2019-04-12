@@ -11,74 +11,96 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            prev: null,
-            loading: true,
+            previousPageURL: null,
+            connected: false,
             messages: [],
             username: null
         }
     }
 
-    onMessage = (message) => {
+    login = async (username) => {
+        await this.setState({username});
+        if (username.trim()) {
+            this.ws = api.connectToChat({
+                onMessage: this.handleMessage.bind(this),
+                onError: this.handleError.bind(this),
+                onClose: this.handleClose.bind(this),
+                onOpen: this.handleConnect.bind(this)
+            });
+        }
+    };
+    handleConnect = async () => {
+        await this.setState({connected: true, error: null});
+        await this.fetchMessages();
+    };
+    handleMessage = (message) => {
         this.setState({
             messages: [...this.state.messages, message]
         });
     };
-
-    handleSendMessage = async (text) => {
-        const message = {
-            username: this.state.username,
-            text,
-        };
-        await this.ws.sendPacked(message);
+    handleError = () => {
+        this.setState({error: 'Connection error. Trying reconnect...'});
     };
-    handleLoadMore = async () => {
-        const resp = await api.loadMoreMessages(this.state.prev);
+    handleClose = () => {
+        this.setState({
+            connected: false,
+            messages: [],
+            previousPageURL: null
+        });
+    };
+    fetchMessages = async () => {
+        const url = this.state.previousPageURL;
+        const response = (url == null)
+            ? await api.getMessages({
+                page_size: 50,
+                filters: {created_before: new Date().toISOString()}
+            })
+            : await api.getMessagesByURL(url);
+
+        // Reverse and next since
+        // we get messages in reverse order
         await this.setState({
-            messages: [...resp.results.reverse(), ...this.state.messages],
-            prev: resp.next
+            messages: [
+                ...response.results.reverse(),
+                ...this.state.messages
+            ],
+            previousPageURL: response.next
         })
     };
 
-    handleLogin = async (username) => {
-        const resp = await api.getMessages({
-            page_size: 50,
-            filters: {
-                created_before: new Date().toISOString()
-            }
-        });
-        await this.setState({
-            messages: resp.results.reverse(),
-            prev: resp.next
-        });
+    sendMessage = async (text) => {
         try {
-            this.ws = api.connectToChat();
-            this.ws.onUnpackedMessage.addListener(this.onMessage.bind(this));
-            this.ws.onClose.addListener(this.ws.open);
-            await this.ws.open();
+            const {username} = this.state;
+            const data = JSON.stringify({username, text});
+            this.ws.send(data);
         } catch (e) {
-            console.error(e);
+            console.log(e)
         }
+    };
 
-        await this.setState({username});
+    logout = () => {
+        this.ws.close();
+        this.setState({username: ''});
     };
 
     render() {
-        const {username, messages, prev} = this.state;
+        const {username, messages, previousPageURL, connected, error} = this.state;
         return (
             <div className='app'>
-                <img src={logo}
-                     className={this.state.loading ? "logo-background logo-spin" : "logo-background"}
-                     alt="logo"
+                <img src={logo} alt="logo"
+                     className={`logo-background ${connected ? "logo-spin" : ""}`}
                 />
                 <div className="container">
                     {username
                         ? <Chat username={username}
                                 messages={messages}
-                                onSendMessage={this.handleSendMessage}
-                                canLoadMore={!!prev}
-                                onLoadMore={this.handleLoadMore}
+                                onSendMessage={this.sendMessage}
+                                canLoadMore={previousPageURL != null}
+                                onLoadMore={this.fetchMessages}
+                                onLogout={this.logout}
+                                error={error}
                         />
-                        : <Login onSubmit={this.handleLogin}/>
+                        : <Login onSubmit={this.login}/>
                     }
                 </div>
             </div>

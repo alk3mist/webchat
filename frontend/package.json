@@ -8,10 +8,10 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "2.1.8",
-    "websocket-as-promised": "^0.9.0"
+    "reconnectingwebsocket": "^1.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "REACT_APP_DEBUG=True react-scripts start",
     "update-static": "rm -rf ../backend/chat/static/ && cp -rf build/static ../backend/chat/static",
     "update-template": "rm -f ../backend/chat/templates/chat/index.html && cp build/index.html ../backend/chat/templates/chat/",
     "git-add": "git add ../backend/chat/templates && git add ../backend/chat/static",
