@@ -17,17 +17,14 @@ export default class MessageForm extends React.Component {
 
     handleInputChange = (event) => {
         const inputValue = event.target.value;
-        // New line is processed by handleInputKeyUp
-        if (!inputValue.endsWith('\n')) {
-            this.setState({inputValue});
-        }
+        this.setState({inputValue});
     };
     handleInputKeyUp = (event) => {
         if (event.keyCode === 27) {
             this.setState({inputValue: ''})
         } else if (event.keyCode === 13) {
             event.preventDefault();
-            if (event.shiftKey) {
+            if (event.ctrlKey) {
                 const input = this.inputRef.current;
                 const start = input.selectionStart;
                 const value = this.state.inputValue;
