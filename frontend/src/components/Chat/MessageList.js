@@ -23,6 +23,25 @@ export const messageShape = PropTypes.shape({
     created_at: PropTypes.instanceOf(Date).isRequired,
     author: userShape.isRequired
 });
+Message.propTypes = {
+    message: messageShape.isRequired,
+    username: PropTypes.string.isRequired
+};
+
+function Message({message, username}) {
+    const {author, text, created_at} = message;
+    const messageClass = `message ${author.username === username ? 'float-right' : 'float-left'}`;
+    return (
+        <li className={messageClass}>
+            {author.username !== username &&
+            <h4>{author.username}</h4>}
+            <pre>{text}</pre>
+            <p className='float-right'>
+                <small>{formatDate(created_at)}</small>
+            </p>
+        </li>
+    );
+}
 
 export default class MessageList extends React.Component {
     static propTypes = {
@@ -36,30 +55,49 @@ export default class MessageList extends React.Component {
     constructor(props) {
         super(props);
         this.bottomRef = React.createRef();
+        this.listRef = React.createRef();
     }
 
     componentDidMount() {
         this.scrollToBottom()
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    getSnapshotBeforeUpdate(prevProps, prevState) {
         const prevMessages = prevProps.messages;
         const messages = this.props.messages;
         // First load
         if (!prevMessages.length) {
-            this.scrollToBottom();
-            return;
+            return 'scrollToBottom';
         }
         // No messages
         if (!messages.length) {
-            return;
+            return null;
         }
 
         const prevLatestMessage = prevMessages[prevMessages.length - 1];
         const latestMessage = messages[messages.length - 1];
         // New message received
         if (prevLatestMessage.created_at < latestMessage.created_at) {
+            return 'scrollToBottom';
+        }
+        const prevFirstMessage = prevMessages[0];
+        const firstMessage = messages[0];
+        // Earlier messages fetched. Remember scroll position
+        if (prevFirstMessage.created_at > firstMessage.created_at) {
+            const list = this.listRef.current;
+            return list.scrollHeight - list.scrollTop;
+        }
+        return null;
+    }
+
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (snapshot === 'scrollToBottom') {
             this.scrollToBottom();
+        } else if (snapshot !== null) {
+            // Restore scroll position
+            const list = this.listRef.current;
+            list.scrollTop = list.scrollHeight - snapshot;
         }
     }
 
@@ -68,25 +106,20 @@ export default class MessageList extends React.Component {
     };
 
     renderMessages = () => {
-        const {username} = this.props;
-        return this.props.messages.map(({id, text, author, created_at}) =>
-            <li key={id}
-                className={`message ${author.username === username ? 'float-right' : 'float-left'}`}
-            >
-                {author.username !== username &&
-                <h4>{author.username}</h4>}
-                <pre>{text}</pre>
-                <p className='float-right'>
-                    <small>{formatDate(created_at)}</small>
-                </p>
-            </li>
-        )
+        const {messages, username} = this.props;
+        return messages.map(message =>
+            <Message
+                key={message.id}
+                message={message}
+                username={username}
+            />
+        );
     };
 
     render() {
         const {canLoadMore} = this.props;
         return (
-            <ul className="list-message">
+            <ul className="list-message" ref={this.listRef}>
                 {canLoadMore &&
                 <li className='center w-50 mb-1'>
                     <button className="button w-100"

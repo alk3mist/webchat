@@ -15,27 +15,29 @@ export default class MessageForm extends React.Component {
         this.inputRef = React.createRef();
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.inputValue.endsWith('\n')) {
-            this.inputRef.current.scrollTo(0, this.inputRef.current.scrollHeight)
-        }
-    }
-
     handleInputChange = (event) => {
         const inputValue = event.target.value;
-        this.setState({inputValue});
+        // New line is processed by handleInputKeyUp
+        if (!inputValue.endsWith('\n')) {
+            this.setState({inputValue});
+        }
     };
     handleInputKeyUp = (event) => {
-        const value = event.target.value;
         if (event.keyCode === 27) {
             this.setState({inputValue: ''})
         } else if (event.keyCode === 13) {
-            if (event.ctrlKey) {
-                this.setState({inputValue: value + '\n'});
+            event.preventDefault();
+            if (event.shiftKey) {
+                const input = this.inputRef.current;
+                const start = input.selectionStart;
+                const value = this.state.inputValue;
+                const newInputValue = value.slice(0, start) + '\n' + value.slice(input.selectionEnd);
+                this.setState({inputValue: newInputValue}, () => {
+                    const updatedInput = this.inputRef.current;
+                    updatedInput.selectionStart = updatedInput.selectionEnd = start + 1;
+                });
             } else {
-                event.preventDefault();
                 this.submit();
-                return false;
             }
         }
     };
@@ -55,7 +57,7 @@ export default class MessageForm extends React.Component {
             <form className='message-form' onSubmit={this.submit}>
                 <textarea
                     ref={this.inputRef}
-                    placeholder='Type a message. Press Enter to send a message, Ctrl+Enter to add a line.'
+                    placeholder='Type a message. Press Enter to send a message, Shift+Enter to add a line.'
                     value={this.state.inputValue}
                     onChange={this.handleInputChange}
                     onKeyUp={this.handleInputKeyUp}
