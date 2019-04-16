@@ -1,0 +1,28 @@
+version: '3.7'
+networks:
+  web:
+    driver: bridge
+  internal:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ./backend
+    tty: true
+    container_name: webchat_backend
+    volumes:
+      - "./backend:/app"
+    networks:
+      - internal
+      - web
+    ports:
+      - "80:80"
+
+  redis:
+    container_name: webchat_redis
+    image: "redis:latest"
+    volumes:
+      - ${PWD}.data/redis:/data
+    networks:
+      - internal
