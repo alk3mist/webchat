@@ -7,6 +7,9 @@ RUN pip install -r /tmp/requirements.txt
 RUN apt-get -y remove gcc
 RUN apt-get -y autoclean
 RUN apt-get -y autoremove
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 VOLUME [ "/app" ]
 EXPOSE 80
-CMD python manage.py migrate; python manage.py runserver 0.0.0.0:80
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
