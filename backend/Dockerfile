@@ -9,4 +9,4 @@ RUN apt-get -y autoclean
 RUN apt-get -y autoremove
 VOLUME [ "/app" ]
 EXPOSE 80
-CMD ["python", "manage.py" , "runserver" , "0.0.0.0:80"]
+CMD python manage.py migrate; python manage.py runserver 0.0.0.0:80
