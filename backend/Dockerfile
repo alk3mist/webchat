@@ -1,12 +1,9 @@
 FROM python:3.7-slim-stretch
 WORKDIR /app
 COPY requirements.txt /tmp
-RUN apt-get update
-RUN apt-get -y install gcc
-RUN pip install -r /tmp/requirements.txt
-RUN apt-get -y remove gcc
-RUN apt-get -y autoclean
-RUN apt-get -y autoremove
+RUN apt-get update \
+    && apt-get -y install gcc \
+    && pip install -r /tmp/requirements.txt
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 VOLUME [ "/app" ]
