@@ -17,7 +17,7 @@ services:
       - internal
       - web
     ports:
-      - "80:80"
+      - "8000:80"
 
   redis:
     container_name: webchat_redis
