@@ -1,10 +1,10 @@
 -i https://pypi.org/simple
 aioredis==1.2.0
-asgiref==3.1.2
+asgiref==3.1.4
 asn1crypto==0.24.0
 async-timeout==3.0.1
 attrs==19.1.0
-autobahn==19.6.2
+autobahn==19.7.2
 automat==0.7.0
 cffi==1.12.3
 channels-redis==2.4.0
@@ -13,9 +13,9 @@ constantly==15.1.0
 cryptography==2.7
 daphne==2.3.0
 django-cors-headers==3.0.2
-django-filter==2.1.0
-django==2.2.2
-djangorestframework==3.9.4
+django-filter==2.2.0
+django==2.2.3
+djangorestframework==3.10.1
 hiredis==1.0.0
 hyperlink==19.0.0
 idna==2.8
